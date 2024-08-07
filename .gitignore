@@ -1,0 +1,14 @@
+# Compiler files
+sol/cache/
+sol/out/
+
+# Ignores development broadcast logs
+sol/broadcast
+
+# Docs
+sol/docs/
+
+# Dotenv file
+sol/.env
+
+*.bin
