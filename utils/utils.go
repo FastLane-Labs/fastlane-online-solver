@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"math/big"
 
 	"github.com/FastLane-Labs/atlas-operations-relay/operation"
 	opsRelayUtils "github.com/FastLane-Labs/atlas-operations-relay/utils"
@@ -40,7 +41,21 @@ func Domain(conf *config.Config, chainId int64) *apitypes.TypedDataDomain {
 	}
 }
 
-func UserOpHash(userOperation fastlaneOnline.UserOperation, domain *apitypes.TypedDataDomain) (common.Hash, error) {
+func UserOpHash(userOperation struct {
+	From         common.Address "json:\"from\""
+	To           common.Address "json:\"to\""
+	Value        *big.Int       "json:\"value\""
+	Gas          *big.Int       "json:\"gas\""
+	MaxFeePerGas *big.Int       "json:\"maxFeePerGas\""
+	Nonce        *big.Int       "json:\"nonce\""
+	Deadline     *big.Int       "json:\"deadline\""
+	Dapp         common.Address "json:\"dapp\""
+	Control      common.Address "json:\"control\""
+	CallConfig   uint32         "json:\"callConfig\""
+	SessionKey   common.Address "json:\"sessionKey\""
+	Data         []uint8        "json:\"data\""
+	Signature    []uint8        "json:\"signature\""
+}, domain *apitypes.TypedDataDomain) (common.Hash, error) {
 	opsRelayUserOp := &operation.UserOperation{
 		From:         userOperation.From,
 		To:           userOperation.To,

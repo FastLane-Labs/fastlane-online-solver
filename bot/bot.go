@@ -168,9 +168,26 @@ func (b *Bot) handlePendingTx(tx *types.Transaction) {
 		return
 	}
 
-	userOperation, ok := decodedUserInput[0].(fastlaneOnline.UserOperation)
+	userOperation, ok := decodedUserInput[0].(struct {
+		From         common.Address "json:\"from\""
+		To           common.Address "json:\"to\""
+		Value        *big.Int       "json:\"value\""
+		Gas          *big.Int       "json:\"gas\""
+		MaxFeePerGas *big.Int       "json:\"maxFeePerGas\""
+		Nonce        *big.Int       "json:\"nonce\""
+		Deadline     *big.Int       "json:\"deadline\""
+		Dapp         common.Address "json:\"dapp\""
+		Control      common.Address "json:\"control\""
+		CallConfig   uint32         "json:\"callConfig\""
+		SessionKey   common.Address "json:\"sessionKey\""
+		Data         []uint8        "json:\"data\""
+		Signature    []uint8        "json:\"signature\""
+	})
 	if !ok {
-		log.Error("failed to cast user operation, type of decodedUserInput[0] is not fastlaneOnline.UserOperation", "decodedUserInput[0]", decodedUserInput[0])
+		log.Error("failed to cast user operation, type of decodedUserInput[0] is not fastlaneOnline.UserOperation",
+			"decodedUserInput[0]", decodedUserInput[0], "type",
+			fmt.Sprintf("%T", decodedUserInput[0]),
+		)
 		return
 	}
 
@@ -180,7 +197,7 @@ func (b *Bot) handlePendingTx(tx *types.Transaction) {
 		panic("method not found in user operation abi - " + userOperationDataMethodStr)
 	}
 
-	decodedUserOperationData, err := userOperationDataMethod.Inputs.UnpackValues(userOperation.Data)
+	decodedUserOperationData, err := userOperationDataMethod.Inputs.UnpackValues(userOperation.Data[4:])
 	if err != nil {
 		log.Error("failed to unpack user operation data", "err", err)
 		return
@@ -191,9 +208,17 @@ func (b *Bot) handlePendingTx(tx *types.Transaction) {
 		return
 	}
 
-	swapIntent, ok := decodedUserOperationData[0].(fastlaneOnline.SwapIntent)
+	swapIntent, ok := decodedUserOperationData[0].(struct {
+		TokenUserBuys     common.Address "json:\"tokenUserBuys\""
+		MinAmountUserBuys *big.Int       "json:\"minAmountUserBuys\""
+		TokenUserSells    common.Address "json:\"tokenUserSells\""
+		AmountUserSells   *big.Int       "json:\"amountUserSells\""
+	})
 	if !ok {
-		log.Error("failed to cast swap intent, type of decodedUserOperationData[0] is not fastlaneOnline.SwapIntent", "decodedUserOperationData[0]", decodedUserOperationData[0])
+		log.Error("failed to cast swap intent, type of decodedUserOperationData[0] is not fastlaneOnline.SwapIntent",
+			"decodedUserOperationData[0]", decodedUserOperationData[0],
+			"type", fmt.Sprintf("%T", decodedUserOperationData[0]),
+		)
 		return
 	}
 
@@ -326,7 +351,21 @@ func (b *Bot) handlePendingTx(tx *types.Transaction) {
 
 	broadcastTx, err := b.fastlaneOnlineContract.AddSolverOp(
 		frontrunTxOps,
-		userOperation,
+		fastlaneOnline.UserOperation{
+			From:         userOperation.From,
+			To:           userOperation.To,
+			Value:        userOperation.Value,
+			Gas:          userOperation.Gas,
+			MaxFeePerGas: userOperation.MaxFeePerGas,
+			Nonce:        userOperation.Nonce,
+			Deadline:     userOperation.Deadline,
+			Dapp:         userOperation.Dapp,
+			Control:      userOperation.Control,
+			CallConfig:   userOperation.CallConfig,
+			SessionKey:   userOperation.SessionKey,
+			Data:         userOperation.Data,
+			Signature:    userOperation.Signature,
+		},
 		fastlaneOnline.SolverOperation{
 			From:         solverOp.From,
 			To:           solverOp.To,
