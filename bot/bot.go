@@ -342,7 +342,7 @@ func (b *Bot) handlePendingTx(tx *types.Transaction) {
 	if tx.Type() == types.LegacyTxType {
 		frontrunTxOps.GasPrice = big.NewInt(0).Add(tx.GasPrice(), gasMargin)
 	} else if tx.Type() == types.DynamicFeeTxType {
-		frontrunTxOps.GasFeeCap = tx.GasFeeCap()
+		frontrunTxOps.GasFeeCap = big.NewInt(0).Add(tx.GasFeeCap(), gasMargin)
 		frontrunTxOps.GasTipCap = big.NewInt(0).Add(tx.GasTipCap(), gasMargin)
 	} else {
 		log.Error("unknown user tx type", "txType", tx.Type())

@@ -55,7 +55,7 @@ func (c *EthClientConnection) reconnect() {
 		log.Info("ethClient conn: reconnecting...")
 		newConn, err := NewEthClientConnection(c.conf)
 		if err == nil {
-			c.Client = newConn.Client
+			*c.Client = *newConn.Client
 			c.Start()
 			return
 		}
