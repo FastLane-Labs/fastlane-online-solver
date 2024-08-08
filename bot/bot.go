@@ -3,6 +3,7 @@ package bot
 import (
 	"bytes"
 	"context"
+	"encoding/hex"
 	"fmt"
 	"math/big"
 	"time"
@@ -148,12 +149,13 @@ func (b *Bot) handlePendingTx(tx *types.Transaction) {
 		return
 	}
 
-	signer := types.LatestSignerForChainID(tx.ChainId())
-	swapper, err := types.Sender(signer, tx)
+	rawTx, err := tx.MarshalJSON()
 	if err != nil {
-		log.Error("failed to get sender address of tx", "err", err, "chainId", tx.ChainId())
+		log.Error("failed to marshal tx to json", "err", err)
 		return
 	}
+
+	log.Info("detected userOperation tx in mempool", "hash", tx.Hash().Hex(), "rawTx", hex.EncodeToString(rawTx))
 
 	decodedUserInput, err := userMethod.Inputs.UnpackValues(tx.Data()[4:])
 	if err != nil {
@@ -161,26 +163,39 @@ func (b *Bot) handlePendingTx(tx *types.Transaction) {
 		return
 	}
 
-	if len(decodedUserInput) != 6 {
+	if len(decodedUserInput) != 1 {
 		log.Error("unexpected decoded user input length", "len", len(decodedUserInput))
 		return
 	}
 
-	swapIntent := decodedUserInput[0].(struct {
-		TokenUserBuys     common.Address "json:\"tokenUserBuys\""
-		MinAmountUserBuys *big.Int       "json:\"minAmountUserBuys\""
-		TokenUserSells    common.Address "json:\"tokenUserSells\""
-		AmountUserSells   *big.Int       "json:\"amountUserSells\""
-	})
-	baselineCall := decodedUserInput[1].(struct {
-		To      common.Address "json:\"to\""
-		Data    []uint8        "json:\"data\""
-		Success bool           "json:\"success\""
-	})
-	deadline := decodedUserInput[2].(*big.Int)
-	gas := decodedUserInput[3].(*big.Int)
-	maxFeePerGas := decodedUserInput[4].(*big.Int)
-	userOpHash := decodedUserInput[5].([32]byte)
+	userOperation, ok := decodedUserInput[0].(fastlaneOnline.UserOperation)
+	if !ok {
+		log.Error("failed to cast user operation, type of decodedUserInput[0] is not fastlaneOnline.UserOperation", "decodedUserInput[0]", decodedUserInput[0])
+		return
+	}
+
+	userOperationDataMethodStr := "swap"
+	userOperationDataMethod, exists := FastlaneOnlineAbi.Methods[userOperationDataMethodStr]
+	if !exists {
+		panic("method not found in user operation abi - " + userOperationDataMethodStr)
+	}
+
+	decodedUserOperationData, err := userOperationDataMethod.Inputs.UnpackValues(userOperation.Data)
+	if err != nil {
+		log.Error("failed to unpack user operation data", "err", err)
+		return
+	}
+
+	if len(decodedUserOperationData) != 2 {
+		log.Error("unexpected decoded user operation data length", "len", len(decodedUserOperationData))
+		return
+	}
+
+	swapIntent, ok := decodedUserOperationData[0].(fastlaneOnline.SwapIntent)
+	if !ok {
+		log.Error("failed to cast swap intent, type of decodedUserOperationData[0] is not fastlaneOnline.SwapIntent", "decodedUserOperationData[0]", decodedUserOperationData[0])
+		return
+	}
 
 	effectiveTokenUserSells := swapIntent.TokenUserSells
 	if effectiveTokenUserSells == (common.Address{}) {
@@ -256,16 +271,22 @@ func (b *Bot) handlePendingTx(tx *types.Transaction) {
 		return
 	}
 
+	userOpHash, err := utils.UserOpHash(userOperation, b.domain)
+	if err != nil {
+		log.Error("error hashing user op", "err", err)
+		return
+	}
+
 	solverOp := &operation.SolverOperation{
 		From:         config.SOLVER_EOA,
 		To:           common.HexToAddress(b.config.AtlasAddress),
 		Value:        big.NewInt(0),
 		Gas:          b.solverGasLimit,
-		MaxFeePerGas: maxFeePerGas,
-		Deadline:     deadline,
+		MaxFeePerGas: userOperation.MaxFeePerGas,
+		Deadline:     userOperation.Deadline,
 		Solver:       common.HexToAddress(b.config.SolverContractAddress),
 		Control:      common.HexToAddress(b.config.FastlaneOnlineAddress),
-		UserOpHash:   common.BytesToHash(userOpHash[:]),
+		UserOpHash:   userOpHash,
 		BidToken:     swapIntent.TokenUserBuys,
 		BidAmount:    bidAmount,
 		Data:         solverOpData,
@@ -305,22 +326,7 @@ func (b *Bot) handlePendingTx(tx *types.Transaction) {
 
 	broadcastTx, err := b.fastlaneOnlineContract.AddSolverOp(
 		frontrunTxOps,
-		fastlaneOnline.SwapIntent{
-			TokenUserBuys:     swapIntent.TokenUserBuys,
-			MinAmountUserBuys: swapIntent.MinAmountUserBuys,
-			TokenUserSells:    swapIntent.TokenUserSells,
-			AmountUserSells:   swapIntent.AmountUserSells,
-		},
-		fastlaneOnline.BaselineCall{
-			To:      baselineCall.To,
-			Data:    baselineCall.Data,
-			Success: baselineCall.Success,
-		},
-		deadline,
-		gas,
-		maxFeePerGas,
-		common.BytesToHash(userOpHash[:]),
-		swapper,
+		userOperation,
 		fastlaneOnline.SolverOperation{
 			From:         solverOp.From,
 			To:           solverOp.To,
