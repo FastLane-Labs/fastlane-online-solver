@@ -152,7 +152,7 @@ func (p *UniswapV3Pool) HandleLog(aLog *types.Log) error {
 		p.tick = spacedTick
 		if prevTick == p.tick {
 			if p.liquidity.Cmp(oldLiquidity) != 0 {
-				log.Error("liquidity changed but tick stayed the same", "pool", p.address.Hex(), "liquidity", oldLiquidity, "newLiquidity", p.liquidity)
+				log.Debug("error - liquidity changed but tick stayed the same", "pool", p.address.Hex(), "liquidity", oldLiquidity, "newLiquidity", p.liquidity)
 			}
 		} else {
 			if p.stateLoaderStatus == nil {
@@ -413,6 +413,8 @@ func deltaXFromPriceDiff(liquidity, currPrice, finalPrice *big.Int, roundUp bool
 func finalPriceFromDeltaY(dy, liquidity, initialPrice *big.Int, add bool) *big.Int {
 	if liquidity.Cmp(big.NewInt(0)) == 0 {
 		return initialPrice
+	} else if dy.Cmp(big.NewInt(0)) == 0 {
+		return initialPrice
 	} else {
 		uint160Max := new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 161), big.NewInt(1))
 		quotient := new(big.Int)
@@ -442,6 +444,8 @@ func finalPriceFromDeltaY(dy, liquidity, initialPrice *big.Int, add bool) *big.I
 
 func finalPriceFromDeltaX(dx, liquidity, initialPrice *big.Int, add bool) *big.Int {
 	if liquidity.Cmp(big.NewInt(0)) == 0 {
+		return initialPrice
+	} else if dx.Cmp(big.NewInt(0)) == 0 {
 		return initialPrice
 	} else {
 		numer1 := new(big.Int).Lsh(liquidity, 96)
