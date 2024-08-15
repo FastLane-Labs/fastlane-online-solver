@@ -10,8 +10,8 @@ services:
     command:
       - --profit_margin_x10000=500
       - --frontrun_gas_margin_gwei=1
-      - --fastlane_online_address=0x3BF81d7D921E7a6A1999ce3dfa3B348c50fE8DFd
-      - --solver_contract_address=0x6F6D7157602bB7b2F2a1dA67dCb99d9C40605eaC
+      - --fastlane_online_address=0xCf00A98bA4ea1D967f34B07Ff76f61E1A5521B96
+      - --solver_contract_address=0x566419cD0800C96DfaD9D787e897FfAb573f0E8f
       - --pools_config_file=pools_config_polygon.yaml
       - --pools_bin_file=pools_polygon.bin
       - --swap_paths_bin_file=swap_paths_polygon.bin
