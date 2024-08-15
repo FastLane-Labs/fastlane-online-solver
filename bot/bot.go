@@ -336,7 +336,7 @@ func (b *Bot) handlePendingTx(tx *types.Transaction) {
 			return types.SignTx(tx, types.LatestSignerForChainID(b.chainId), config.SOLVER_PK)
 		},
 		Value:    big.NewInt(0),
-		GasLimit: uint64(1000_000),
+		GasLimit: uint64(2000_000),
 	}
 	gasMargin := big.NewInt(0).Mul(big.NewInt(b.config.FrontrunGasMarginGwei), big.NewInt(1e9))
 	if tx.Type() == types.LegacyTxType {
