@@ -1,17 +1,13 @@
-FROM golang:1.22-alpine AS builder
+FROM golang:latest
 
 WORKDIR /app
-COPY go.mod go.sum ./
+
+RUN apt-get update
+
+COPY ./go.mod ./go.sum ./
 RUN go mod download
-COPY . .
+COPY . ./
 
-RUN go build -o fastlane-online-solver .
+RUN CGO_ENABLED=0 GOOS=linux go build -o /fastlaneOnlineSolver
 
-FROM alpine:latest  
-RUN apk --no-cache add ca-certificates
-
-WORKDIR /root/
-COPY --from=builder /app/fastlane-online-solver .
-
-ENTRYPOINT ["./fastlane-online-solver"]
-CMD []
+ENTRYPOINT ["/fastlaneOnlineSolver"]
