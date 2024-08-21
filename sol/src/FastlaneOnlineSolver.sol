@@ -106,7 +106,7 @@ contract FastlaneOnlineSolver {
         uint256 amount = tokenUserSells == address(0) ? address(this).balance : ERC20(tokenUserSells).balanceOf(address(this));
         if (tokenUserSells == address(0)) {
             require(swapPath[0].tokenIn == WETH_ADDRESS, "swapPath[0].tokenIn != WETH_ADDRESS");
-            IWETH9(WETH_ADDRESS).deposit{value: msg.value}();
+            IWETH9(WETH_ADDRESS).deposit{value: amount}();
         }
 
         for (uint256 i = 0; i < swapPath.length; i++) {
