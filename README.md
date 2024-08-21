@@ -59,22 +59,8 @@ SOLVER_PK=<SOLVER_PK> go run main.go
 
 ## deployment
 
-Build docker image using `Dockerfile` -
-```
-docker build --platform=linux/amd64 -t ghcr.io/fastlane-labs/fastlane-online-solver:latest .
-```
-
-Push the image to the registry using - 
-```
-docker push ghcr.io/fastlane-labs/fastlane-online-solver:latest
-```
-
-After updating the configurations in docker-compose.yml`, generate data files on the server using 
+After updating the configurations in docker-compose.yml`, deploy using 
 
 ```
-CTX=<SERVER> MODE=data_gen make up
-```
-and run the bot in a docker container using - 
-```
-CTX=<SERVER> SOLVER_PK=<SOLVER_PK> make up
+SOLVER_PK=<SOLVER_PK> MODE=run_bot CTX=<DEPLOY_CONTEXT> make deploy
 ```

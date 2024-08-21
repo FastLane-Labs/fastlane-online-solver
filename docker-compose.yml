@@ -3,7 +3,7 @@ version: '3.8'
 services:
   fastlane-online-solver:
     container_name: fastlane-online-solver-${ENV:-dev}
-    image: ghcr.io/fastlane-labs/fastlane-online-solver:${TAG:-latest}
+    image: ghcr.io/fastlane-labs/fastlane-online-solver:latest-main
     environment:
       MODE: ${MODE}
       SOLVER_PK: ${SOLVER_PK}
@@ -13,11 +13,13 @@ services:
       - --fastlane_online_address=0x87f9B954C403Fec2A9964CFFB8AcA9CD7ED55FDf
       - --solver_contract_address=0x566419cD0800C96DfaD9D787e897FfAb573f0E8f
       - --pools_config_file=pools_config_polygon.yaml
-      - --pools_bin_file=pools_polygon.bin
-      - --swap_paths_bin_file=swap_paths_polygon.bin
+      - --pools_bin_file=/data/pools_polygon.bin
+      - --swap_paths_bin_file=/data/swap_paths_polygon.bin
       - --mempool_connection_eth_method=alchemy_pendingTransactions
       - --max_concurrent_rpc_calls=5
       - --log_level=debug
+    volumes:
+      - ./data:/data
 
 networks:
   default:
