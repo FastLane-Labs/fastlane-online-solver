@@ -46,6 +46,8 @@ contract FastlaneOnlineSolver {
         _atlas = atlas;
     }
 
+    receive() external payable {}
+
     function atlasSolverCall(
         address solverOpFrom,
         address executionEnvironment,

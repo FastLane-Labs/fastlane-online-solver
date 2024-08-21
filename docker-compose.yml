@@ -11,7 +11,7 @@ services:
       - --profit_margin_x10000=500
       - --frontrun_gas_margin_gwei=1
       - --fastlane_online_address=0x87f9B954C403Fec2A9964CFFB8AcA9CD7ED55FDf
-      - --solver_contract_address=0x566419cD0800C96DfaD9D787e897FfAb573f0E8f
+      - --solver_contract_address=0x092C0Bf03bF0358fBb546de166B9A7901f2f3e23
       - --pools_config_file=pools_config_polygon.yaml
       - --pools_bin_file=/data/pools_polygon.bin
       - --swap_paths_bin_file=/data/swap_paths_polygon.bin
