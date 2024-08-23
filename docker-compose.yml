@@ -10,6 +10,8 @@ services:
     command:
       - --profit_margin_x10000=2000
       - --frontrun_gas_margin_gwei=1
+      - --atlas_address=0x912AceADa1b9c9B378894D0610C5684167710FDD
+      - --atlas_verification_address=0x2fBF38a38D753E4ce398000CCC552Efa50702e1e
       - --fastlane_online_address=0x498aC70345AD6b161eEf4AFBEA8F010401cfa780
       - --solver_contract_address=0x8b9DBb1e5Fc4FE20940F2A18Ee90D934c0379aAD
       - --pools_config_file=pools_config_polygon.yaml
@@ -17,7 +19,7 @@ services:
       - --swap_paths_bin_file=/data/swap_paths_polygon.bin
       - --mempool_connection_eth_method=alchemy_pendingTransactions
       - --max_concurrent_rpc_calls=5
-      - --log_level=debug
+      - --log_level=info
     volumes:
       - ./data:/data
 
