@@ -10,14 +10,14 @@ services:
     command:
       - --profit_margin_x10000=500
       - --frontrun_gas_margin_gwei=1
-      - --fastlane_online_address=0x87f9B954C403Fec2A9964CFFB8AcA9CD7ED55FDf
-      - --solver_contract_address=0x463769DA630a74Cf843d824D31e4828e0ad979D8
+      - --fastlane_online_address=0x498aC70345AD6b161eEf4AFBEA8F010401cfa780
+      - --solver_contract_address=0x8b9DBb1e5Fc4FE20940F2A18Ee90D934c0379aAD
       - --pools_config_file=pools_config_polygon.yaml
       - --pools_bin_file=/data/pools_polygon.bin
       - --swap_paths_bin_file=/data/swap_paths_polygon.bin
       - --mempool_connection_eth_method=alchemy_pendingTransactions
       - --max_concurrent_rpc_calls=5
-      - --log_level=debug
+      - --log_level=info
     volumes:
       - ./data:/data
 
