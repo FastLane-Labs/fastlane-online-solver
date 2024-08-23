@@ -134,9 +134,11 @@ func (b *Bot) handleLog(aLog *types.Log) {
 
 func (b *Bot) handlePendingTx(tx *types.Transaction) {
 	if *tx.To() != common.HexToAddress(b.config.FastlaneOnlineAddress) {
+		log.Debug("tx not to fastlane online", "to", tx.To().Hex(), "hash", tx.Hash().Hex())
 		return
 	}
 	if len(tx.Data()) < 4 {
+		log.Debug("tx data too short", "hash", tx.Hash().Hex())
 		return
 	}
 	userMethodStr := "fastOnlineSwap"
@@ -146,6 +148,7 @@ func (b *Bot) handlePendingTx(tx *types.Transaction) {
 	}
 
 	if !bytes.Equal(userMethod.ID, tx.Data()[:4]) {
+		log.Debug("tx data does not match user method", "hash", tx.Hash().Hex(), "methodId", hex.EncodeToString(tx.Data()[:4]), "expectedMethodId", hex.EncodeToString(userMethod.ID))
 		return
 	}
 

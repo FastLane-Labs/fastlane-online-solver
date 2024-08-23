@@ -8,7 +8,7 @@ services:
       MODE: ${MODE}
       SOLVER_PK: ${SOLVER_PK}
     command:
-      - --profit_margin_x10000=500
+      - --profit_margin_x10000=2000
       - --frontrun_gas_margin_gwei=1
       - --fastlane_online_address=0x498aC70345AD6b161eEf4AFBEA8F010401cfa780
       - --solver_contract_address=0x8b9DBb1e5Fc4FE20940F2A18Ee90D934c0379aAD
@@ -17,7 +17,7 @@ services:
       - --swap_paths_bin_file=/data/swap_paths_polygon.bin
       - --mempool_connection_eth_method=alchemy_pendingTransactions
       - --max_concurrent_rpc_calls=5
-      - --log_level=info
+      - --log_level=debug
     volumes:
       - ./data:/data
 
