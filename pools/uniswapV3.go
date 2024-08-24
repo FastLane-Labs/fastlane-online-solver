@@ -312,6 +312,12 @@ func (p *UniswapV3Pool) Output(inputToken common.Address, outputToken common.Add
 			if dy.Cmp(inputRemainingLessFee) >= 0 {
 				finalPrice := finalPriceFromInput(inputRemainingLessFee, liq, currPrice, false)
 				if finalPrice.Cmp(currPrice) < 0 {
+					log.Error("final price less than curr price",
+						"finalPrice", finalPrice,
+						"currPrice", currPrice,
+						"inputRemainingLessFee", inputRemainingLessFee,
+						"liq", liq,
+					)
 					panic("final price less than curr price")
 				}
 				dx := deltaXFromPriceDiff(liq, currPrice, finalPrice, false)
@@ -347,6 +353,12 @@ func (p *UniswapV3Pool) Output(inputToken common.Address, outputToken common.Add
 			if dx.Cmp(inputRemainingLessFee) >= 0 {
 				finalPrice := finalPriceFromInput(inputRemainingLessFee, liq, currPrice, true)
 				if finalPrice.Cmp(currPrice) > 0 {
+					log.Error("final price greater than curr price",
+						"finalPrice", finalPrice,
+						"currPrice", currPrice,
+						"inputRemainingLessFee", inputRemainingLessFee,
+						"liq", liq,
+					)
 					panic("final price greater than curr price")
 				}
 				dy := deltaYFromPriceDiff(liq, currPrice, finalPrice, false)

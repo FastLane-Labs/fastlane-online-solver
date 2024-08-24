@@ -3,6 +3,7 @@ package config
 import (
 	"crypto/ecdsa"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -154,6 +155,26 @@ func NewConfig() *Config {
 			log.Fatalf("error: invalid MAX_CONCURRENT_RPC_CALLS env var")
 		}
 	}
+
+	fmt.Println("Config loaded")
+	fmt.Println("Mode:", conf.Mode)
+	fmt.Println("Log level:", conf.LogLevel)
+	fmt.Println("Ethereum RPC URL:", conf.EthRpcUrl)
+	fmt.Println("Bloxroute gRPC URL:", conf.BloxrouteGrpcUrl)
+	fmt.Println("Bloxroute auth token:", conf.BloxrouteAuthToken)
+	fmt.Println("Pools config file:", conf.PoolsConfigFile)
+	fmt.Println("Pools bin file:", conf.PoolsBinFile)
+	fmt.Println("Swap paths bin file:", conf.SwapPathsBinFile)
+	fmt.Println("Mempool connection ETH method:", conf.MempoolConnectionEthMethod)
+	fmt.Println("Interesting tokens:", conf.InterestingTokens)
+	fmt.Println("Fastlane online address:", conf.FastlaneOnlineAddress)
+	fmt.Println("Solver contract address:", conf.SolverContractAddress)
+	fmt.Println("Atlas address:", conf.AtlasAddress)
+	fmt.Println("Atlas verification address:", conf.AtlasVerificationAddress)
+	fmt.Println("WETH address:", conf.WethAddress)
+	fmt.Println("Frontrun gas margin (gwei):", conf.FrontrunGasMarginGwei)
+	fmt.Println("Profit margin x10000:", conf.ProfitMarginx10000)
+	fmt.Println("Max concurrent RPC calls:", conf.MaxConcurrentRpcCalls)
 
 	return &conf
 }
