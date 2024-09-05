@@ -43,7 +43,7 @@ Smart contract implementation of the `FastlaneOnlineSolver` contract.
 Deploy the `FastlaneOnlineSolver` smart contract using - 
 ```
 cd sol/
-SOLVER1_PRIVATE_KEY=<SOLVER_PK> ~/.foundry/bin/forge script script/DeployFastlaneOnlineSolver.s.sol:DeployFastlaneOnlineSolverScript --rpc-url <RPC_URL> --broadcast
+SOLVER1_PRIVATE_KEY=<SOLVER_PK> forge script script/DeployFastlaneOnlineSolver.s.sol:DeployFastlaneOnlineSolverScript --rpc-url <RPC_URL> --broadcast
 ```
 
 Then generate pools and paths static data using
@@ -59,7 +59,7 @@ SOLVER_PK=<SOLVER_PK> go run main.go
 
 ## deployment
 
-After updating the configurations in docker-compose.yml`, deploy using 
+After updating the configurations in `docker-compose.yml`, deploy using 
 
 ```
 SOLVER_PK=<SOLVER_PK> MODE=run_bot CTX=<DEPLOY_CONTEXT> make deploy
