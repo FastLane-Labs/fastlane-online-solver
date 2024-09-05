@@ -69,6 +69,12 @@ func (p *UniswapV2Pool) HandleLog(aLog *types.Log) error {
 }
 
 func (p *UniswapV2Pool) Output(inputToken common.Address, outputToken common.Address, input *big.Int) (*big.Int, error) {
+	if input.Cmp(big.NewInt(0)) < 0 {
+		return nil, fmt.Errorf("input amount must be greater than 0")
+	}
+	if input.Cmp(big.NewInt(0)) == 0 {
+		return big.NewInt(0), nil
+	}
 	var reserveIn, reserveOut *big.Int
 	if inputToken == p.tokenA && outputToken == p.tokenB {
 		reserveIn, reserveOut = p.reserveA, p.reserveB

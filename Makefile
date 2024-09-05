@@ -30,6 +30,7 @@ deploy:
 	fi
 	$(DOCKER) compose down --remove-orphans
 	$(DOCKER) compose rm --stop --force
+	$(DOCKER) compose pull
 	$(DOCKER) compose run --rm -e MODE=data_gen fastlane-online-solver
 	$(DOCKER) compose up -d fastlane-online-solver
 
@@ -40,11 +41,3 @@ clean:
 	fi
 	$(DOCKER) compose down --volumes --remove-orphans
 	$(DOCKER) compose rm --stop --force
-
-restart-bot:
-	@if [ -z "$(CTX)" ]; then \
-		echo "Error: CTX is not set"; \
-		exit 1; \
-	fi
-	$(DOCKER) compose stop fastlane-online-solver
-	$(DOCKER) compose start fastlane-online-solver

@@ -291,6 +291,12 @@ func (p *UniswapV3Pool) Deserialize(data []byte) error {
 }
 
 func (p *UniswapV3Pool) Output(inputToken common.Address, outputToken common.Address, input *big.Int) (*big.Int, error) {
+	if input.Cmp(big.NewInt(0)) < 0 {
+		return nil, fmt.Errorf("input amount must be greater than 0")
+	}
+	if input.Cmp(big.NewInt(0)) == 0 {
+		return big.NewInt(0), nil
+	}
 	tokenAtotokenB := p.tokenA == inputToken && p.tokenB == outputToken
 	tokenBtotokenA := p.tokenA == outputToken && p.tokenB == inputToken
 	if !tokenAtotokenB && !tokenBtotokenA {
@@ -305,6 +311,9 @@ func (p *UniswapV3Pool) Output(inputToken common.Address, outputToken common.Add
 
 	if tokenBtotokenA {
 		for {
+			if inputRemaining.Cmp(big.NewInt(0)) <= 0 {
+				break
+			}
 			inputRemainingLessFee := mulDiv(inputRemaining, big.NewInt(1000_000-p.fee), big.NewInt(1000_000))
 			nextTick := currTick + p.tickSpacing
 			nextTickPrice := priceAtTick(nextTick)
@@ -346,6 +355,9 @@ func (p *UniswapV3Pool) Output(inputToken common.Address, outputToken common.Add
 		}
 	} else {
 		for {
+			if inputRemaining.Cmp(big.NewInt(0)) <= 0 {
+				break
+			}
 			inputRemainingLessFee := mulDiv(inputRemaining, big.NewInt(1000_000-p.fee), big.NewInt(1000_000))
 			prevTick := currTick
 			prevTickPrice := priceAtTick(prevTick)
